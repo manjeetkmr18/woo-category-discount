@@ -95,7 +95,7 @@ class WC_Category_Discount_Frontend {
 
         $discount = WC_Category_Discount_Helper::get_product_discount( $product );
 
-        if ( $discount > 0 ) {
+        if ( $discount['value'] > 0 ) {
             $original_price = $this->get_original_price( $product );
             if ( $original_price ) {
                 return WC_Category_Discount_Helper::calculate_discounted_price( $original_price, $discount );
@@ -116,7 +116,7 @@ class WC_Category_Discount_Frontend {
     public function custom_price_html( $price_html, $product ) {
         $discount = WC_Category_Discount_Helper::get_product_discount( $product );
 
-        if ( $discount <= 0 ) {
+        if ( $discount['value'] <= 0 ) {
             return $price_html;
         }
 
@@ -134,7 +134,7 @@ class WC_Category_Discount_Frontend {
      *
      * @since  1.0.0
      * @param  WC_Product $product  Product object.
-     * @param  float      $discount Discount percentage.
+     * @param  array      $discount Discount array with type and value.
      * @return string
      */
     private function get_simple_price_html( $product, $discount ) {
@@ -148,6 +148,7 @@ class WC_Category_Discount_Frontend {
 
         $html  = '<del aria-hidden="true">' . wc_price( $regular_price ) . '</del> ';
         $html .= '<ins>' . wc_price( $sale_price ) . '</ins>';
+
         $html .= $this->get_discount_badge( $discount );
 
         return $html;
@@ -158,7 +159,7 @@ class WC_Category_Discount_Frontend {
      *
      * @since  1.0.0
      * @param  WC_Product_Variable $product  Product object.
-     * @param  float               $discount Discount percentage.
+     * @param  array               $discount Discount array with type and value.
      * @return string
      */
     private function get_variable_price_html( $product, $discount ) {
@@ -202,14 +203,17 @@ class WC_Category_Discount_Frontend {
      * Get discount badge HTML.
      *
      * @since  1.0.0
-     * @param  float $discount Discount percentage.
+     * @param  array $discount Discount array with type and value.
      * @return string
      */
     private function get_discount_badge( $discount ) {
+        $discount_text = $discount['type'] === 'percentage' 
+            ? sprintf( '-%s%%', number_format( $discount['value'], 0 ) )
+            : sprintf( '-%s', wc_price( $discount['value'] ) );
+        
         return sprintf(
             '<span class="wc-category-discount-badge">%s</span>',
-            /* translators: %s: Discount percentage */
-            sprintf( esc_html__( '-%s%%', 'woo-category-discount' ), number_format( $discount, 0 ) )
+            $discount_text
         );
     }
 

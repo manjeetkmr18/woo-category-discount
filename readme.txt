@@ -1,6 +1,6 @@
 === WooCommerce Category Discount ===
-Contributors: yourname
-Donate link: https://example.com/donate
+Contributors: Manjeet Kumar
+Donate link: https://paypal.me/WebXDevelopments
 Tags: woocommerce, discount, category, sale, pricing
 Requires at least: 5.8
 Tested up to: 6.4

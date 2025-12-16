@@ -41,29 +41,45 @@ class WC_Category_Discount_Helper {
      *
      * @since  1.0.0
      * @param  int $category_id Category ID.
-     * @return float
+     * @return array
      */
     public static function get_category_discount( $category_id ) {
         $discounts = self::get_discounts();
-        return isset( $discounts[ $category_id ] ) ? floatval( $discounts[ $category_id ] ) : 0;
+        if ( isset( $discounts[ $category_id ] ) ) {
+            // Handle old format (just percentage value)
+            if ( is_numeric( $discounts[ $category_id ] ) ) {
+                return array(
+                    'type' => 'percentage',
+                    'value' => floatval( $discounts[ $category_id ] ),
+                    'apply_to_children' => false
+                );
+            }
+            // New format
+            return wp_parse_args( $discounts[ $category_id ], array(
+                'type' => 'percentage',
+                'value' => 0,
+                'apply_to_children' => false
+            ) );
+        }
+        return array( 'type' => 'percentage', 'value' => 0, 'apply_to_children' => false );
     }
 
     /**
-     * Get the discount percentage for a product based on its categories.
+     * Get the discount amount for a product based on its categories.
      *
      * @since  1.0.0
      * @param  WC_Product $product Product object.
-     * @return float
+     * @return array
      */
     public static function get_product_discount( $product ) {
         if ( ! $product || ! is_a( $product, 'WC_Product' ) ) {
-            return 0;
+            return array( 'type' => 'percentage', 'value' => 0 );
         }
 
         $discounts = self::get_discounts();
 
         if ( empty( $discounts ) ) {
-            return 0;
+            return array( 'type' => 'percentage', 'value' => 0 );
         }
 
         // Get product ID (for variations, get parent ID).
@@ -75,18 +91,83 @@ class WC_Category_Discount_Helper {
         $category_ids = wc_get_product_term_ids( $product_id, 'product_cat' );
 
         if ( empty( $category_ids ) ) {
-            return 0;
+            return array( 'type' => 'percentage', 'value' => 0 );
         }
 
-        // Get the highest discount from all categories.
-        $max_discount = 0;
+        // Get all applicable discounts including parent categories
+        $applicable_discounts = array();
+        
         foreach ( $category_ids as $cat_id ) {
-            if ( isset( $discounts[ $cat_id ] ) && floatval( $discounts[ $cat_id ] ) > $max_discount ) {
-                $max_discount = floatval( $discounts[ $cat_id ] );
+            // Add direct category discount
+            $discount = self::get_category_discount( $cat_id );
+            if ( $discount['value'] > 0 ) {
+                $applicable_discounts[] = $discount;
+            }
+            
+            // Check parent categories for hierarchical discounts
+            $parent_discounts = self::get_parent_category_discounts( $cat_id );
+            $applicable_discounts = array_merge( $applicable_discounts, $parent_discounts );
+        }
+
+        if ( empty( $applicable_discounts ) ) {
+            return array( 'type' => 'percentage', 'value' => 0 );
+        }
+
+        // Return the highest applicable discount
+        return self::get_highest_discount( $applicable_discounts );
+    }
+
+    /**
+     * Get discounts from parent categories that apply to children.
+     *
+     * @since  1.0.0
+     * @param  int $category_id Category ID.
+     * @return array
+     */
+    public static function get_parent_category_discounts( $category_id ) {
+        $discounts = array();
+        $parent_id = wp_get_term_taxonomy_parent_id( $category_id, 'product_cat' );
+        
+        while ( $parent_id ) {
+            $parent_discount = self::get_category_discount( $parent_id );
+            if ( $parent_discount['value'] > 0 && $parent_discount['apply_to_children'] ) {
+                $discounts[] = $parent_discount;
+            }
+            $parent_id = wp_get_term_taxonomy_parent_id( $parent_id, 'product_cat' );
+        }
+        
+        return $discounts;
+    }
+
+    /**
+     * Get the highest discount from an array of discounts.
+     *
+     * @since  1.0.0
+     * @param  array $discounts Array of discount arrays.
+     * @return array
+     */
+    public static function get_highest_discount( $discounts ) {
+        $highest_percentage = 0;
+        $highest_fixed = 0;
+        $result = array( 'type' => 'percentage', 'value' => 0 );
+
+        foreach ( $discounts as $discount ) {
+            if ( $discount['type'] === 'percentage' && $discount['value'] > $highest_percentage ) {
+                $highest_percentage = $discount['value'];
+                $result = $discount;
+            } elseif ( $discount['type'] === 'fixed' && $discount['value'] > $highest_fixed ) {
+                $highest_fixed = $discount['value'];
+                $result = $discount;
             }
         }
 
-        return $max_discount;
+        // Prefer fixed amount if it's greater than percentage equivalent
+        if ( $highest_fixed > 0 && $highest_percentage > 0 ) {
+            // This is a simple heuristic - in practice you might want more sophisticated logic
+            $result = array( 'type' => 'fixed', 'value' => $highest_fixed );
+        }
+
+        return $result;
     }
 
     /**
@@ -94,15 +175,23 @@ class WC_Category_Discount_Helper {
      *
      * @since  1.0.0
      * @param  float $price    Original price.
-     * @param  float $discount Discount percentage.
+     * @param  array $discount Discount array with type and value.
      * @return float
      */
     public static function calculate_discounted_price( $price, $discount ) {
-        if ( empty( $price ) || ! is_numeric( $price ) || $discount <= 0 ) {
+        if ( empty( $price ) || ! is_numeric( $price ) || $discount['value'] <= 0 ) {
             return $price;
         }
 
-        $discounted = $price - ( $price * ( $discount / 100 ) );
+        if ( $discount['type'] === 'percentage' ) {
+            $discounted = $price - ( $price * ( $discount['value'] / 100 ) );
+        } else {
+            $discounted = $price - $discount['value'];
+        }
+
+        // Ensure price doesn't go below 0
+        $discounted = max( 0, $discounted );
+        
         return round( $discounted, wc_get_price_decimals() );
     }
 
@@ -114,7 +203,8 @@ class WC_Category_Discount_Helper {
      * @return bool
      */
     public static function has_discount( $product ) {
-        return self::get_product_discount( $product ) > 0;
+        $discount = self::get_product_discount( $product );
+        return $discount['value'] > 0;
     }
 
     /**

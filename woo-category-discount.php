@@ -7,7 +7,7 @@
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            Manjeet Kumar
- * Author URI:        https://webxdevelopments.com/
+ * Author URI:        https://manjeet.work
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       woo-category-discount
