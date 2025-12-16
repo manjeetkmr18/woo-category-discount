@@ -1,0 +1,83 @@
+/**
+ * Admin styles
+ *
+ * @package WC_Category_Discount
+ * @since   1.0.0
+ */
+
+.wc-category-discount-wrap {
+    max-width: 900px;
+}
+
+.wc-category-discount-wrap h1 {
+    margin-bottom: 10px;
+}
+
+.wc-category-discount-wrap .description {
+    margin-bottom: 20px;
+    color: #646970;
+}
+
+.wc-category-discount-table {
+    margin-top: 20px;
+}
+
+.wc-category-discount-table .column-category {
+    width: 50%;
+}
+
+.wc-category-discount-table .column-discount {
+    width: 25%;
+}
+
+.wc-category-discount-table .column-count {
+    width: 25%;
+}
+
+.wc-category-discount-table .category-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wc-category-discount-table .category-name .dashicons {
+    color: #787c82;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.wc-category-discount-table .category-parent {
+    color: #787c82;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+.wc-category-discount-table input[type="number"] {
+    width: 70px;
+    text-align: center;
+}
+
+.wc-category-discount-table .description {
+    color: #646970;
+    margin-left: 4px;
+}
+
+.wc-category-discount-table .product-count {
+    color: #646970;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+    .wc-category-discount-table .column-category {
+        width: 40%;
+    }
+
+    .wc-category-discount-table .column-discount {
+        width: 30%;
+    }
+
+    .wc-category-discount-table .column-count {
+        width: 30%;
+    }
+}
