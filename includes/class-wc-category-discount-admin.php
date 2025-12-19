@@ -44,8 +44,8 @@ class WC_Category_Discount_Admin {
     public function add_admin_menu() {
         add_submenu_page(
             'woocommerce',
-            __( 'Category Discounts', 'woo-category-discount' ),
-            __( 'Category Discounts', 'woo-category-discount' ),
+            __( 'Category Discounts', 'webxdev-category-discount' ),
+            __( 'Category Discounts', 'webxdev-category-discount' ),
             'manage_woocommerce',
             'wc-category-discounts',
             array( $this, 'render_admin_page' )
@@ -210,7 +210,7 @@ class WC_Category_Discount_Admin {
      */
     public function add_action_links( $links ) {
         $plugin_links = array(
-            '<a href="' . esc_url( admin_url( 'admin.php?page=wc-category-discounts' ) ) . '">' . esc_html__( 'Settings', 'woo-category-discount' ) . '</a>',
+            '<a href="' . esc_url( admin_url( 'admin.php?page=wc-category-discounts' ) ) . '">' . esc_html__( 'Settings', 'webxdev-category-discount' ) . '</a>',
         );
 
         return array_merge( $plugin_links, $links );
@@ -272,7 +272,7 @@ class WC_Category_Discount_Admin {
         $discount_value = floatval( $_POST['discount_value'] ?? 0 );
 
         if ( ! $category_id || $discount_value <= 0 ) {
-            wp_send_json_error( __( 'Invalid category or discount value.', 'woo-category-discount' ) );
+            wp_send_json_error( __( 'Invalid category or discount value.', 'webxdev-category-discount' ) );
         }
 
         // Get all child categories
@@ -306,7 +306,7 @@ class WC_Category_Discount_Admin {
         wp_send_json_success( 
             sprintf(
                 /* translators: %d: Number of categories updated */
-                _n( '%d category updated.', '%d categories updated.', $updated_count, 'woo-category-discount' ),
+                _n( '%d category updated.', '%d categories updated.', $updated_count, 'webxdev-category-discount' ),
                 $updated_count
             )
         );

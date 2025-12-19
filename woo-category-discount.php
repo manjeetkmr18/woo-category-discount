@@ -9,7 +9,7 @@
  * Author URI:        https://webxdevelopments.com
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       woo-category-discount
+ * Text Domain:       webxdev-category-discount
  * Domain Path:       /languages
  * Requires Plugins:  woocommerce
  *
@@ -84,9 +84,9 @@ function wc_category_discount_woocommerce_notice() {
             <?php
             printf(
                 /* translators: %1$s: Plugin name, %2$s: WooCommerce */
-                esc_html__( '%1$s requires %2$s to be installed and active.', 'woo-category-discount' ),
-                '<strong>' . esc_html__( 'WooCommerce Category Discount', 'woo-category-discount' ) . '</strong>',
-                '<strong>' . esc_html__( 'WooCommerce', 'woo-category-discount' ) . '</strong>'
+                esc_html__( '%1$s requires %2$s to be installed and active.', 'webxdev-category-discount' ),
+                '<strong>' . esc_html__( 'WooCommerce Category Discount', 'webxdev-category-discount' ) . '</strong>',
+                '<strong>' . esc_html__( 'WooCommerce', 'webxdev-category-discount' ) . '</strong>'
             );
             ?>
         </p>

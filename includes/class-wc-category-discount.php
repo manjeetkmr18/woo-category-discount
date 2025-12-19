@@ -101,7 +101,7 @@ class WC_Category_Discount {
      */
     public function load_textdomain() {
         load_plugin_textdomain(
-            'woo-category-discount',
+            'webxdev-category-discount',
             false,
             dirname( WC_CATEGORY_DISCOUNT_PLUGIN_BASENAME ) . '/languages/'
         );
@@ -130,9 +130,9 @@ class WC_Category_Discount {
                 <?php
                 printf(
                     /* translators: %s: WooCommerce plugin name */
-                    esc_html__( '%1$s requires %2$s to be installed and active.', 'woo-category-discount' ),
-                    '<strong>' . esc_html__( 'WooCommerce Category Discount', 'woo-category-discount' ) . '</strong>',
-                    '<strong>' . esc_html__( 'WooCommerce', 'woo-category-discount' ) . '</strong>'
+                    esc_html__( '%1$s requires %2$s to be installed and active.', 'webxdev-category-discount' ),
+                    '<strong>' . esc_html__( 'WooCommerce Category Discount', 'webxdev-category-discount' ) . '</strong>',
+                    '<strong>' . esc_html__( 'WooCommerce', 'webxdev-category-discount' ) . '</strong>'
                 );
                 ?>
             </p>
