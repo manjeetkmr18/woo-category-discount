@@ -142,3 +142,43 @@ add_action(
         }
     }
 );
+
+/**
+ * Disable WordPress.org update checks for this plugin.
+ *
+ * This plugin is hosted on GitHub, not WordPress.org.
+ * This prevents false update notifications from similarly-named plugins.
+ *
+ * @since 1.0.0
+ *
+ * @param object $transient The update transient object.
+ * @return object Modified transient object.
+ */
+function wc_category_discount_disable_wporg_updates( $transient ) {
+    if ( isset( $transient->response[ WC_CATEGORY_DISCOUNT_PLUGIN_BASENAME ] ) ) {
+        unset( $transient->response[ WC_CATEGORY_DISCOUNT_PLUGIN_BASENAME ] );
+    }
+    return $transient;
+}
+add_filter( 'pre_set_site_transient_update_plugins', 'wc_category_discount_disable_wporg_updates' );
+
+/**
+ * Disable plugin information from WordPress.org for this plugin.
+ *
+ * @since 1.0.0
+ *
+ * @param false|object|array $result The result object or array.
+ * @param string             $action The type of information being requested.
+ * @param object             $args   Plugin API arguments.
+ * @return false|object|array Modified result.
+ */
+function wc_category_discount_disable_wporg_plugin_info( $result, $action, $args ) {
+    if ( 'plugin_information' === $action && isset( $args->slug ) && 'woo-category-discount' === $args->slug ) {
+        return new WP_Error(
+            'plugins_api_failed',
+            __( 'This plugin is not hosted on WordPress.org.', 'webxdev-category-discount' )
+        );
+    }
+    return $result;
+}
+add_filter( 'plugins_api', 'wc_category_discount_disable_wporg_plugin_info', 10, 3 );
