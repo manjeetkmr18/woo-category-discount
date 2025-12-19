@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name:       WooCommerce Category Discount
- * Plugin URI:        https://wordpress.org/plugins/woo-category-discount/
  * Description:       Apply percentage-based discounts to WooCommerce products by category with automatic strikethrough pricing display.
  * Version:           1.0.0
  * Requires at least: 5.8
